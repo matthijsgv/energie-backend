@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: energie
+      uri: mongodb+srv://matthijs:sTC6UytAkEUM7g0x@energie.7nbx6vz.mongodb.net/?retryWrites=true&w=majority
