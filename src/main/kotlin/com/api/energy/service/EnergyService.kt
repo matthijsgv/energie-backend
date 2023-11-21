@@ -7,7 +7,9 @@ import com.api.energy.model.mongo.EnergyMeasurementResponse
 import com.api.energy.repository.EnergyMeasurementPerHourRepository
 import com.api.energy.repository.EnergyMeasurementRepository
 import java.time.format.DateTimeFormatter
+import java.util.logging.Logger
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +18,7 @@ class EnergyService(
     private val energyMeasurementPerHourRepository: EnergyMeasurementPerHourRepository
 ) {
 
+    private val log = LoggerFactory.getLogger(EnergyService::class.java)
     fun getAllMeasurements() = energyMeasurementRepository.findAll().map { it.toResponse() }
 
     fun postNewMeasurement(measurement: MeasurementDTO): EnergyMeasurementResponse {
@@ -30,7 +33,7 @@ class EnergyService(
     fun processHourlyMeasurement(measurement: EnergyMeasurement) {
         val date = measurement.timeStamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val hour = measurement.timeStamp.hour
-
+        log.info("date: $date, hour: $hour")
         val existing = energyMeasurementPerHourRepository.findByDateAndHour(date, hour)
 
         if (existing == null) {
