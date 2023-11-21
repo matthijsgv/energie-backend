@@ -1,10 +1,10 @@
 package com.api.energy.controller
 
-import com.api.energy.model.EnergyMeasurement
-import com.api.energy.model.EnergyMeasurementResponse
+import com.api.energy.model.mongo.EnergyMeasurementResponse
 import com.api.energy.model.dto.MeasurementDTO
 import com.api.energy.service.EnergyService
 import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,4 +23,8 @@ class EnergyController(private val energyService: EnergyService) {
         log.info(measurement.toString())
         return energyService.postNewMeasurement(measurement)
     }
+
+    @DeleteMapping("/api/measurement")
+    fun deleteAllMeasurements() =
+        energyService.deleteAllMeasurements()
 }

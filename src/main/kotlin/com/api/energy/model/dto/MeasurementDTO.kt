@@ -1,6 +1,6 @@
 package com.api.energy.model.dto
 
-import com.api.energy.model.EnergyMeasurement
+import com.api.energy.model.mongo.EnergyMeasurement
 import java.time.LocalDateTime
 import org.bson.types.ObjectId
 
