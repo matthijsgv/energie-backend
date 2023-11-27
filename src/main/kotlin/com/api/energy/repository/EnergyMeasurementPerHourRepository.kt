@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface EnergyMeasurementPerHourRepository: MongoRepository<EnergyMeasurementPerHour, ObjectId> {
     fun findByDateAndHour(date: String, hour: Int): EnergyMeasurementPerHour?
+
+    fun findByDate(date: String): List<EnergyMeasurementPerHour>
 }

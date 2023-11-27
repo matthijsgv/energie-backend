@@ -1,12 +1,15 @@
 package com.api.energy.service
 
+import com.api.energy.model.EnergyUsed
 import com.api.energy.model.dto.MeasurementDTO
 import com.api.energy.model.mongo.EnergyMeasurement
 import com.api.energy.model.mongo.EnergyMeasurementPerHour
 import com.api.energy.model.mongo.EnergyMeasurementResponse
 import com.api.energy.repository.EnergyMeasurementPerHourRepository
 import com.api.energy.repository.EnergyMeasurementRepository
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
+import java.util.*
 import java.util.logging.Logger
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
@@ -70,7 +73,38 @@ class EnergyService(
                 )
             )
         }
+    }
 
+    fun getDataForRange(startDate: String, endDate: String): Map<String, EnergyUsed> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val startCalendar = Calendar.getInstance()
+        val endCalendar = Calendar.getInstance()
 
+        startCalendar.time = dateFormat.parse(startDate)!!
+        endCalendar.time = dateFormat.parse(endDate)!!
+
+        val datesList = mutableListOf<String>()
+        val dateEnergyMap = mutableMapOf<String, EnergyUsed>()
+
+        while (!startCalendar.after(endCalendar)) {
+            val currentDate = dateFormat.format(startCalendar.time)
+            datesList.add(currentDate)
+            startCalendar.add(Calendar.DATE, 1)
+        }
+
+        datesList.forEach{
+            val energyUsed = getDaySummary(it)
+            dateEnergyMap[it] = energyUsed
+        }
+
+        return dateEnergyMap
+    }
+    fun getDaySummary(date: String): EnergyUsed {
+        val oneDay = energyMeasurementPerHourRepository.findByDate(date)
+        log.info(oneDay.toString())
+        return EnergyUsed(oneDay.sumOf { it.consumptieLaagTariefDifference },
+            oneDay.sumOf { it.consumptieHoogTariefDifference },
+            oneDay.sumOf { it.retourLeveringLaagTariefDifference },
+            oneDay.sumOf { it.retourLeveringHoogTariefDifference })
     }
 }
