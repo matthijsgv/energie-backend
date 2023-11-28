@@ -107,4 +107,8 @@ class EnergyService(
             oneDay.sumOf { it.retourLeveringLaagTariefDifference },
             oneDay.sumOf { it.retourLeveringHoogTariefDifference })
     }
+
+    fun getLastMeasurement(): EnergyMeasurement {
+        return energyMeasurementRepository.findFirstByOrderByTimeStampDesc()
+    }
 }

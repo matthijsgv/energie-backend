@@ -42,4 +42,7 @@ class EnergyController(private val energyService: EnergyService) {
 
     @DeleteMapping("/api/measurement")
     fun deleteAllMeasurements() = energyService.deleteAllMeasurements()
+
+    @GetMapping("/api/measurement/last")
+    fun getLastMeasurement() = energyService.getLastMeasurement().toResponse()
 }

@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface EnergyMeasurementRepository : MongoRepository<EnergyMeasurement, ObjectId>
+interface EnergyMeasurementRepository : MongoRepository<EnergyMeasurement, ObjectId> {
+    fun findFirstByOrderByTimeStampDesc(): EnergyMeasurement
+}
