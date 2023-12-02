@@ -1,6 +1,8 @@
 package com.api.energy.service
 
 import com.api.energy.model.EnergyUsed
+import com.api.energy.model.EnergyUsedHourly
+import com.api.energy.model.dto.HeatingMeasurementDTO
 import com.api.energy.model.dto.MeasurementDTO
 import com.api.energy.model.mongo.EnergyMeasurement
 import com.api.energy.model.mongo.EnergyMeasurementPerHour
@@ -75,7 +77,7 @@ class EnergyService(
         }
     }
 
-    fun getDataForRange(startDate: String, endDate: String): Map<String, EnergyUsed> {
+    private fun getDateList(startDate: String, endDate: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val startCalendar = Calendar.getInstance()
         val endCalendar = Calendar.getInstance()
@@ -84,13 +86,20 @@ class EnergyService(
         endCalendar.time = dateFormat.parse(endDate)!!
 
         val datesList = mutableListOf<String>()
-        val dateEnergyMap = mutableMapOf<String, EnergyUsed>()
 
         while (!startCalendar.after(endCalendar)) {
             val currentDate = dateFormat.format(startCalendar.time)
             datesList.add(currentDate)
             startCalendar.add(Calendar.DATE, 1)
         }
+        return datesList
+    }
+
+    fun getDataForRange(startDate: String, endDate: String): Map<String, EnergyUsed> {
+        val datesList = getDateList(startDate, endDate)
+
+        val dateEnergyMap = mutableMapOf<String, EnergyUsed>()
+
 
         datesList.forEach{
             val energyUsed = getDaySummary(it)
@@ -111,4 +120,32 @@ class EnergyService(
     fun getLastMeasurement(): EnergyMeasurement {
         return energyMeasurementRepository.findFirstByOrderByTimeStampDesc()
     }
+
+    fun getHourlyDataForDateRange(startDate: String, endDate: String): List<EnergyUsedHourly> {
+        val datesList = getDateList(startDate, endDate)
+
+        val result = mutableListOf<EnergyUsedHourly>()
+        datesList.forEach{
+            day ->
+                val dayList = energyMeasurementPerHourRepository.findByDateOrderByHourAsc(day)
+                if (dayList.isEmpty()) {
+                    for (i in 0..23){
+                        result.add(EnergyUsedHourly(day, i, EnergyUsed()))
+                    }
+                } else {
+                    dayList.forEach {
+                        meas ->
+                        result.add(EnergyUsedHourly(meas.date,meas.hour,EnergyUsed(
+                            meas.consumptieLaagTariefDifference,
+                            meas.consumptieHoogTariefDifference,
+                            meas.retourLeveringLaagTariefDifference,
+                            meas.retourLeveringHoogTariefDifference
+                        )))
+                    }
+                }
+
+        }
+        return result
+    }
+
 }

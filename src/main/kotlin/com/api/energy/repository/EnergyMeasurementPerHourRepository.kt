@@ -10,4 +10,6 @@ interface EnergyMeasurementPerHourRepository: MongoRepository<EnergyMeasurementP
     fun findByDateAndHour(date: String, hour: Int): EnergyMeasurementPerHour?
 
     fun findByDate(date: String): List<EnergyMeasurementPerHour>
+
+    fun findByDateOrderByHourAsc(date: String): List<EnergyMeasurementPerHour>
 }
