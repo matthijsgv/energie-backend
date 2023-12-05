@@ -13,4 +13,13 @@ data class HeatingMeasurementPerHour(
     val heatingStartValue: Long,
     val heatingLastValue: Long,
     val heatingDifference: Long
-    )
+    ) {
+    fun toResponse() = HeatingResponse(this._id.toHexString(), this.date, this.hour, this.heatingDifference)
+}
+data class HeatingResponse(
+    val id: String,
+    val date: String,
+    val hour: Int,
+    val heatingDiffence: Long
+
+)
