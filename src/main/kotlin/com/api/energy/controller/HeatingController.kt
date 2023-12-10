@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/heating")
-class HeatingController (private val heatingService: HeatingService) {
+class HeatingController(private val heatingService: HeatingService) {
 
     val log = LoggerFactory.getLogger("test")
 
@@ -25,5 +25,13 @@ class HeatingController (private val heatingService: HeatingService) {
     @GetMapping("/hourly")
     fun getDataForRange(@RequestParam startDate: String, @RequestParam endDate: String) =
         heatingService.getDataPerHourForRange(startDate, endDate)
+
+    @GetMapping("/weekly")
+    fun getWeeklyData(
+        @RequestParam endDate: String,
+        @RequestParam size: Int,
+    ) = heatingService.getDataPerWeek(endDate, size)
+
+
 
 }

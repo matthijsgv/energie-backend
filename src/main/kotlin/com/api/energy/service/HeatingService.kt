@@ -1,5 +1,6 @@
 package com.api.energy.service
 
+import com.api.energy.model.HeatingUsedWeekly
 import com.api.energy.model.dto.HeatingMeasurementDTO
 import com.api.energy.model.mongo.HeatingMeasurement
 import com.api.energy.model.mongo.HeatingMeasurementPerHour
@@ -80,5 +81,63 @@ class HeatingService(
             result.addAll(dailyData)
         }
         return result
+    }
+
+
+    fun getFirstDayOfWeekByWeekNumber(year: Int, weekNumber: Int): Pair<Calendar, Calendar> {
+
+        val calendar = Calendar.getInstance(Locale.getDefault())
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.WEEK_OF_YEAR, weekNumber)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val startDate = calendar.clone() as Calendar
+
+        calendar.add(Calendar.DAY_OF_WEEK, 6)
+
+        val endDate = calendar.clone() as Calendar
+
+        return Pair(startDate, endDate)
+    }
+
+    fun getWeekData(startDate: Calendar, endDate: Calendar): List<HeatingMeasurementPerHour> {
+        val format = SimpleDateFormat("yyyy-MM-dd")
+
+        return heatingMeasurementPerHourRepository.findByDateBetween(format.format(startDate.time), format.format(endDate.time
+        ))
+    }
+
+    fun getWeekNumber(date: Calendar): Int {
+        if (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            date.add(Calendar.DAY_OF_WEEK, -1)
+        }
+        return date.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    fun getDataPerWeek(endDate: String, weeks: Int): List<HeatingUsedWeekly> {
+        val result = mutableListOf<HeatingUsedWeekly>()
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        val date = format.parse(endDate)
+        val cal = Calendar.getInstance(Locale.getDefault())
+        cal.time = date
+        for (i in 1..weeks) {
+            val weekNumber = getWeekNumber(cal)
+            println(weekNumber)
+            val year = cal.get(Calendar.YEAR)
+            val dates = getFirstDayOfWeekByWeekNumber(year, weekNumber)
+            val weekData = getWeekData(dates.first, dates.second)
+            val heatingUsedWeekly = HeatingUsedWeekly(
+                week = weekNumber,
+                year = year,
+                startDate = format.format(dates.first.time),
+                endDate = format.format(dates.second.time),
+                heatingUsed = weekData.sumOf {
+                    it.heatingDifference
+                }
+            )
+            result.add(heatingUsedWeekly)
+            cal.add(Calendar.WEEK_OF_YEAR, -1)
+        }
+        return result.reversed()
     }
 }
