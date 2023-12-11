@@ -1,5 +1,8 @@
 package com.api.energy.service
 
+import com.api.energy.common.DateUtilities
+import com.api.energy.common.DateUtilities.getDateList
+import com.api.energy.common.DateUtilities.getWeekNumber
 import com.api.energy.model.HeatingUsedWeekly
 import com.api.energy.model.dto.HeatingMeasurementDTO
 import com.api.energy.model.mongo.HeatingMeasurement
@@ -53,24 +56,6 @@ class HeatingService(
         }
     }
 
-    private fun getDateList(startDate: String, endDate: String): List<String> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val startCalendar = Calendar.getInstance()
-        val endCalendar = Calendar.getInstance()
-
-        startCalendar.time = dateFormat.parse(startDate)!!
-        endCalendar.time = dateFormat.parse(endDate)!!
-
-        val datesList = mutableListOf<String>()
-
-        while (!startCalendar.after(endCalendar)) {
-            val currentDate = dateFormat.format(startCalendar.time)
-            datesList.add(currentDate)
-            startCalendar.add(Calendar.DATE, 1)
-        }
-        return datesList
-    }
-
     fun getDataPerHourForRange(startDate: String, endDate: String):List<HeatingResponse> {
         val dateList = getDateList(startDate, endDate)
 
@@ -83,23 +68,6 @@ class HeatingService(
         return result
     }
 
-
-    fun getFirstDayOfWeekByWeekNumber(year: Int, weekNumber: Int): Pair<Calendar, Calendar> {
-
-        val calendar = Calendar.getInstance(Locale.getDefault())
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.WEEK_OF_YEAR, weekNumber)
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-
-        val startDate = calendar.clone() as Calendar
-
-        calendar.add(Calendar.DAY_OF_WEEK, 6)
-
-        val endDate = calendar.clone() as Calendar
-
-        return Pair(startDate, endDate)
-    }
-
     fun getWeekData(startDate: Calendar, endDate: Calendar): List<HeatingMeasurementPerHour> {
         val format = SimpleDateFormat("yyyy-MM-dd")
 
@@ -107,12 +75,7 @@ class HeatingService(
         ))
     }
 
-    fun getWeekNumber(date: Calendar): Int {
-        if (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            date.add(Calendar.DAY_OF_WEEK, -1)
-        }
-        return date.get(Calendar.WEEK_OF_YEAR)
-    }
+
 
     fun getDataPerWeek(endDate: String, weeks: Int): List<HeatingUsedWeekly> {
         val result = mutableListOf<HeatingUsedWeekly>()
@@ -122,9 +85,8 @@ class HeatingService(
         cal.time = date
         for (i in 1..weeks) {
             val weekNumber = getWeekNumber(cal)
-            println(weekNumber)
             val year = cal.get(Calendar.YEAR)
-            val dates = getFirstDayOfWeekByWeekNumber(year, weekNumber)
+            val dates = DateUtilities.getFirstDayOfWeekByWeekNumber(year, weekNumber)
             val weekData = getWeekData(dates.first, dates.second)
             val heatingUsedWeekly = HeatingUsedWeekly(
                 week = weekNumber,

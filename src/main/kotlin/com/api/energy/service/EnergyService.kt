@@ -1,5 +1,6 @@
 package com.api.energy.service
 
+import com.api.energy.common.DateUtilities.getDateList
 import com.api.energy.model.EnergyUsed
 import com.api.energy.model.EnergyUsedHourly
 import com.api.energy.model.dto.HeatingMeasurementDTO
@@ -7,9 +8,11 @@ import com.api.energy.model.dto.MeasurementDTO
 import com.api.energy.model.mongo.EnergyMeasurement
 import com.api.energy.model.mongo.EnergyMeasurementPerHour
 import com.api.energy.model.mongo.EnergyMeasurementResponse
+import com.api.energy.model.mongo.MeasurementResponse
 import com.api.energy.repository.EnergyMeasurementPerHourRepository
 import com.api.energy.repository.EnergyMeasurementRepository
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.logging.Logger
@@ -77,24 +80,6 @@ class EnergyService(
         }
     }
 
-    private fun getDateList(startDate: String, endDate: String): List<String> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val startCalendar = Calendar.getInstance()
-        val endCalendar = Calendar.getInstance()
-
-        startCalendar.time = dateFormat.parse(startDate)!!
-        endCalendar.time = dateFormat.parse(endDate)!!
-
-        val datesList = mutableListOf<String>()
-
-        while (!startCalendar.after(endCalendar)) {
-            val currentDate = dateFormat.format(startCalendar.time)
-            datesList.add(currentDate)
-            startCalendar.add(Calendar.DATE, 1)
-        }
-        return datesList
-    }
-
     fun getDataForRange(startDate: String, endDate: String): Map<String, EnergyUsed> {
         val datesList = getDateList(startDate, endDate)
 
@@ -146,6 +131,13 @@ class EnergyService(
 
         }
         return result
+    }
+
+    fun getLastHour(): List<MeasurementResponse> {
+        val now = LocalDateTime.now()
+        val oneHourAgo = now.minusHours(1)
+
+        return energyMeasurementRepository.findByTimeStampAfter(oneHourAgo).map { MeasurementResponse(timeStamp =  it.timeStamp.toString(), werkelijkVerbruik = it.werkelijkVerbruik, werkelijkeRetourLevering = it.werkelijkeRetourLevering ) }
     }
 
 }

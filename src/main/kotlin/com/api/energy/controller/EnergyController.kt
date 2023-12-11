@@ -49,4 +49,7 @@ class EnergyController(private val energyService: EnergyService) {
     @GetMapping("api/measurement/hourly/range")
     fun getHourlyRange(@RequestParam(required = true) startDate: String,@RequestParam(required = true) endDate: String ) =
         energyService.getHourlyDataForDateRange(startDate, endDate)
+
+    @GetMapping("api/measurement/last-hour")
+    fun getLastHour() = energyService.getLastHour()
 }
