@@ -26,12 +26,19 @@ class HeatingController(private val heatingService: HeatingService) {
     fun getDataForRange(@RequestParam startDate: String, @RequestParam endDate: String) =
         heatingService.getDataPerHourForRange(startDate, endDate)
 
+    @GetMapping("/daily")
+    fun getDailyDataForRange(@RequestParam startDate: String, @RequestParam endDate: String) =
+        heatingService.getDataPerDayForRange(startDate, endDate)
     @GetMapping("/weekly")
     fun getWeeklyData(
         @RequestParam endDate: String,
         @RequestParam size: Int,
     ) = heatingService.getDataPerWeek(endDate, size)
 
+    @GetMapping("/monthly")
+    fun getMonthlyData(
+        @RequestParam months: Int
+    ) = heatingService.getMonthData(months)
 
 
 }

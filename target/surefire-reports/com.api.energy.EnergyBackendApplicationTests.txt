@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.api.energy.EnergyBackendApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.167 s - in com.api.energy.EnergyBackendApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.776 s - in com.api.energy.EnergyBackendApplicationTests

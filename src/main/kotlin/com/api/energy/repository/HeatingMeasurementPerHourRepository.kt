@@ -17,4 +17,6 @@ interface HeatingMeasurementPerHourRepository : MongoRepository<HeatingMeasureme
 
     @Query("{ 'date': { '\$gte': ?0, '\$lte': ?1 } }")
     fun findByDateBetween(startDate: String, endDate: String): List<HeatingMeasurementPerHour>
+
+    fun findByDate(date: String): List<HeatingMeasurementPerHour>
 }

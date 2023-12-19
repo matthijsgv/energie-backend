@@ -136,7 +136,6 @@ class EnergyService(
     fun getLastHour(): List<MeasurementResponse> {
         val now = LocalDateTime.now()
         val oneHourAgo = now.minusHours(1)
-
         return energyMeasurementRepository.findByTimeStampAfter(oneHourAgo).map { MeasurementResponse(timeStamp =  it.timeStamp.toString(), werkelijkVerbruik = it.werkelijkVerbruik, werkelijkeRetourLevering = it.werkelijkeRetourLevering ) }
     }
 

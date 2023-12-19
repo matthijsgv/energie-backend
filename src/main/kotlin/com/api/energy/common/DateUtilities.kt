@@ -46,4 +46,17 @@ object DateUtilities {
         return datesList
     }
 
+    fun getFirstAndLastDayOfMonth(month: Int, year: Int): Pair<Date, Date> {
+        val cal =  Calendar.getInstance(Locale.getDefault())
+        cal.set(Calendar.YEAR, year)
+        cal.set(Calendar.MONTH, month)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        val firstDay = cal.time
+        cal.add(Calendar.MONTH, 1)
+        cal.add(Calendar.DATE, -1)
+        val lastDay = cal.time
+
+        return Pair<Date, Date>(firstDay, lastDay)
+    }
+
 }

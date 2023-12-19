@@ -2,7 +2,10 @@ package com.api.energy.service
 
 import com.api.energy.common.DateUtilities
 import com.api.energy.common.DateUtilities.getDateList
+import com.api.energy.common.DateUtilities.getFirstAndLastDayOfMonth
 import com.api.energy.common.DateUtilities.getWeekNumber
+import com.api.energy.model.HeatingUsedDaily
+import com.api.energy.model.HeatingUsedMonthly
 import com.api.energy.model.HeatingUsedWeekly
 import com.api.energy.model.dto.HeatingMeasurementDTO
 import com.api.energy.model.mongo.HeatingMeasurement
@@ -68,6 +71,17 @@ class HeatingService(
         return result
     }
 
+    fun getDataPerDayForRange(startDate: String, endDate: String): List<HeatingUsedDaily> {
+        val dateList = getDateList(startDate, endDate)
+        val result = mutableListOf<HeatingUsedDaily>()
+        dateList.forEach {
+            date ->
+            val dataForDay = heatingMeasurementPerHourRepository.findByDate(date)
+            result.add(HeatingUsedDaily(date = date, heatingUsed = dataForDay.sumOf { it.heatingDifference }))
+        }
+        return result
+    }
+
     fun getWeekData(startDate: Calendar, endDate: Calendar): List<HeatingMeasurementPerHour> {
         val format = SimpleDateFormat("yyyy-MM-dd")
 
@@ -102,4 +116,31 @@ class HeatingService(
         }
         return result.reversed()
     }
+
+    fun getMonthData(
+        monthsBack: Int,
+    ): List<HeatingUsedMonthly>{
+        val result = mutableListOf<HeatingUsedMonthly>()
+        val cal = Calendar.getInstance(Locale.getDefault())
+        var month = cal.get(Calendar.MONTH)
+        var year = cal.get(Calendar.YEAR)
+        for ( i in 0 until monthsBack) {
+
+            val firstAndLastDay = getFirstAndLastDayOfMonth(month, year)
+            val format = SimpleDateFormat("yyyy-MM-dd")
+            println("firstDay = ${format.format(firstAndLastDay.first)}, lastDay = ${format.format(firstAndLastDay.second)}")
+            val heatingThisMonth = heatingMeasurementPerHourRepository.findByDateBetween(format.format(firstAndLastDay.first), format.format(firstAndLastDay.second))
+            result.add(HeatingUsedMonthly(year, month, heatingUsed = heatingThisMonth.sumOf { it.heatingDifference }))
+
+            if (month == 0) {
+                year -= 1
+                month = 11
+            } else {
+                month -= 1
+            }
+        }
+        return result
+    }
+
+
 }
