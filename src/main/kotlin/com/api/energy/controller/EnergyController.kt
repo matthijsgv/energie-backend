@@ -26,7 +26,7 @@ class EnergyController(private val energyService: EnergyService) {
 
     @PostMapping("/api/measurement")
     fun addNewMeasurement(@RequestBody measurement: MeasurementDTO): EnergyMeasurementResponse {
-        log.info(measurement.toString())
+        log.info("New measurement: $measurement")
         return energyService.postNewMeasurement(measurement)
     }
 

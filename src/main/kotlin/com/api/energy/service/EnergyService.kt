@@ -41,7 +41,6 @@ class EnergyService(
     fun processHourlyMeasurement(measurement: EnergyMeasurement) {
         val date = measurement.timeStamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val hour = measurement.timeStamp.hour
-        log.info("date: $date, hour: $hour")
         val existing = energyMeasurementPerHourRepository.findByDateAndHour(date, hour)
 
         if (existing == null) {
@@ -95,7 +94,6 @@ class EnergyService(
     }
     fun getDaySummary(date: String): EnergyUsed {
         val oneDay = energyMeasurementPerHourRepository.findByDate(date)
-        log.info(oneDay.toString())
         return EnergyUsed(oneDay.sumOf { it.consumptieLaagTariefDifference },
             oneDay.sumOf { it.consumptieHoogTariefDifference },
             oneDay.sumOf { it.retourLeveringLaagTariefDifference },

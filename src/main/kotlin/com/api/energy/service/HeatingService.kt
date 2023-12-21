@@ -128,7 +128,6 @@ class HeatingService(
 
             val firstAndLastDay = getFirstAndLastDayOfMonth(month, year)
             val format = SimpleDateFormat("yyyy-MM-dd")
-            println("firstDay = ${format.format(firstAndLastDay.first)}, lastDay = ${format.format(firstAndLastDay.second)}")
             val heatingThisMonth = heatingMeasurementPerHourRepository.findByDateBetween(format.format(firstAndLastDay.first), format.format(firstAndLastDay.second))
             result.add(HeatingUsedMonthly(year, month, heatingUsed = heatingThisMonth.sumOf { it.heatingDifference }))
 
