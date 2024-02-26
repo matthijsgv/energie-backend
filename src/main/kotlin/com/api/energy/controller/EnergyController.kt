@@ -52,4 +52,8 @@ class EnergyController(private val energyService: EnergyService) {
 
     @GetMapping("api/measurement/last-hour")
     fun getLastHour() = energyService.getLastHour()
+
+    @GetMapping("/api/measurement/weekly")
+    fun getWeekly(@RequestParam endDate: String,
+                  @RequestParam size: Int) = energyService.getDataPerWeek(endDate, size )
 }
