@@ -11,13 +11,15 @@ data class User(
         val _id: ObjectId,
         val username: String,
         val password: String,
-        val role: String
+        val role: String,
+        val name: String
 ) {
     fun toResponse(): UserResponse {
         return UserResponse(
                 userId = this._id.toHexString(),
                 username = this.username,
-                role = this.role
+                role = this.role,
+                name = this.name
         )
     }
 }
@@ -25,5 +27,6 @@ data class User(
 data class UserResponse(
         val userId: String,
         val username: String,
-        val role: String
+        val role: String,
+        val name: String
 )

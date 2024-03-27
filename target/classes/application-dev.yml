@@ -3,3 +3,5 @@ spring:
     mongodb:
       database: energy
       uri: mongodb+srv://matthijs:sTC6UytAkEUM7g0x@energie.7nbx6vz.mongodb.net/?retryWrites=true&w=majority
+
+jwt.key: 3627328048e44764186120a6372b9104637aee99e547913588d83e13486ad249
