@@ -10,27 +10,29 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@RequestMapping("/api/measurement")
 class EnergyController(private val energyService: EnergyService) {
 
     private val log = LoggerFactory.getLogger(EnergyController::class.java)
 
-    @GetMapping("/api/measurement")
+    @GetMapping("/all")
     fun getAllMeasurements() = energyService.getAllMeasurements()
 
-    @GetMapping("/api/measurement/daily/{date}")
+    @GetMapping("/daily/{date}")
     fun getDailySummary(@PathVariable date: String) = energyService.getDaySummary(date)
 
-    @PostMapping("/api/measurement")
+    @PostMapping
     fun addNewMeasurement(@RequestBody measurement: MeasurementDTO): EnergyMeasurementResponse {
         log.info("New measurement: $measurement")
         return energyService.postNewMeasurement(measurement)
     }
 
-    @GetMapping("/api/measurement/range")
+    @GetMapping("/range")
     fun getDataForRange(
         @RequestParam(required = true) startDate: String,
         @RequestParam(required = true) endDate: String
@@ -40,20 +42,17 @@ class EnergyController(private val energyService: EnergyService) {
     }
 
 
-    @DeleteMapping("/api/measurement")
-    fun deleteAllMeasurements() = energyService.deleteAllMeasurements()
-
-    @GetMapping("/api/measurement/last")
+    @GetMapping("/last")
     fun getLastMeasurement() = energyService.getLastMeasurement().toResponse()
 
-    @GetMapping("api/measurement/hourly/range")
+    @GetMapping("/hourly/range")
     fun getHourlyRange(@RequestParam(required = true) startDate: String,@RequestParam(required = true) endDate: String ) =
         energyService.getHourlyDataForDateRange(startDate, endDate)
 
-    @GetMapping("api/measurement/last-hour")
+    @GetMapping("/last-hour")
     fun getLastHour() = energyService.getLastHour()
 
-    @GetMapping("/api/measurement/weekly")
+    @GetMapping("/weekly")
     fun getWeekly(@RequestParam endDate: String,
                   @RequestParam size: Int) = energyService.getDataPerWeek(endDate, size )
 }

@@ -3,3 +3,5 @@ spring:
     mongodb:
       database: energy
       uri: ${MONGO_URI}
+
+jwt.key: ${JWT_SECRET}
