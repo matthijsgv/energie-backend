@@ -20,6 +20,7 @@ class UserService (
         private val tokenService: TokenService
 ) {
 
+
     fun registerUser(userInfo: RegisterDTO) {
         if (userRepository.findByUsername(userInfo.username) != null) {
             throw DuplicateUserException("User already exists with this username")
@@ -35,6 +36,7 @@ class UserService (
     }
 
     fun login(loginDTO: LoginDTO): LoginResponse {
+
         val userData = userRepository.findByUsername(loginDTO.username)
         require( userData != null) {
             throw UserNotFoundException("No user found with this username")
