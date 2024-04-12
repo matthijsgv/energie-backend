@@ -22,7 +22,7 @@ class TokenService (
     fun createToken(user: UserResponse): String {
         val jwsHeader = JwsHeader.with { "HS256" }.build()
         val claims = JwtClaimsSet.builder()
-                .issuedAt(Instant.now()).expiresAt(Instant.now().plus(30L, ChronoUnit.DAYS))
+                .issuedAt(Instant.now()).expiresAt(Instant.now().plus(999L, ChronoUnit.DAYS))
                 .claim("userData", gson.toJson(user))
                 .build()
         return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).tokenValue
